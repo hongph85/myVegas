@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ClubAPI-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ClubAPI-pod
+  template:
+    metadata:
+      labels:
+        app: ClubAPI-pod
+    spec:
+      containers:
+      - name: ClubAPI-container
+        image: playstudioacr.azurecr.io/helloaspnetcore:v1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5000
