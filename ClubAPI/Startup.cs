@@ -43,7 +43,7 @@ namespace ClubAPI
             services.AddSingleton<IClubDBSettings>(sp =>
                 sp.GetRequiredService<IOptions<ClubDBSettings>>().Value);
 
-            services.AddSingleton<ClubService>();
+            services.AddSingleton<IClubService, ClubService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

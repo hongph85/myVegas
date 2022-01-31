@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using ClubAPI.DataAccess;
 using ClubAPI.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace ClubAPI.Services
 {
-    public class ClubService
+    public class ClubService : IClubService
     {
         private readonly IMongoCollection<Club> _clubs;
         private readonly IMongoCollection<Member> _members;
@@ -23,7 +24,13 @@ namespace ClubAPI.Services
 
         public Club GetClubByName(string name)
         {
-            return _clubs.Find<Club>(x => x.Name == name).FirstOrDefault();
+            return _clubs.AsQueryable<Club>().Where(x => x.Name == name).FirstOrDefault();
+        }
+
+        public IEnumerable<Club> GetAllClubs()
+        {
+            var documents = _clubs.Find(new BsonDocument()).ToList();
+            return documents;
         }
 
         public Club AddClub(string name)
@@ -33,24 +40,24 @@ namespace ClubAPI.Services
             return club;
         }
 
-        internal Club GetClubById(Guid clubId)
+        public Club GetClubById(Guid clubId)
         {
-            return _clubs.Find<Club>(x => x.ClubId == clubId).FirstOrDefault();
+            return _clubs.AsQueryable<Club>().Where(x => x.ClubId == clubId).FirstOrDefault();
         }
 
-        internal IEnumerable<int> GetMembersByClub(Guid clubId)
+        public IEnumerable<int> GetMembersByClub(Guid clubId)
         {
-            return _members.Find<Member>(x => x.ClubId == clubId).ToList().Select(x => x.PlayerId);
+            return _members.AsQueryable<Member>().Where(x => x.ClubId.CompareTo(clubId) == 0).ToList().Select(x => x.PlayerId);
         }
 
-        internal void AddMember(Guid clubId, int playerId)
+        public void AddMember(Guid clubId, int playerId)
         {
             var entity = new Member()
             {
                 ClubId = clubId,
                 PlayerId = playerId
             };
-            
+
             _members.InsertOne(entity);
         }
     }

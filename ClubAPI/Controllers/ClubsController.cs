@@ -15,8 +15,8 @@ namespace ClubAPI.Controllers
     [Route("api/[controller]")]
     public class ClubsController : ControllerBase
     {
-        ClubService service;
-        public ClubsController(ClubService service)
+        IClubService service;
+        public ClubsController(IClubService service)
         {
             this.service = service;
         }
